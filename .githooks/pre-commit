@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  exit 0
+fi
+
+search() {
+  local pattern="$1"
+  if command -v rg >/dev/null 2>&1; then
+    rg -n --no-heading -e "$pattern"
+  else
+    grep -nE "$pattern"
+  fi
+}
+
+filter_added() {
+  if command -v rg >/dev/null 2>&1; then
+    rg -e '^\\+[^+]' || true
+  else
+    grep -E '^\\+[^+]' || true
+  fi
+}
+
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+if [[ -z "${staged_files}" ]]; then
+  exit 0
+fi
+
+disallowed_regex='(^|/)(\\.env(\\.|$)|secrets?/|.*\\.pem$|.*\\.key$|.*\\.p12$|.*\\.pfx$|.*\\.jks$|id_rsa$|id_rsa\\.pub$|id_ed25519$|id_ed25519\\.pub$)'
+if echo "${staged_files}" | search "${disallowed_regex}" >/dev/null 2>&1; then
+  echo "ERROR: 检测到不应提交的敏感文件："
+  echo "${staged_files}" | search "${disallowed_regex}" || true
+  echo "请移除这些文件或加入 .gitignore。"
+  exit 1
+fi
+
+secret_regex='(AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|gho_[A-Za-z0-9]{36}|ghs_[A-Za-z0-9]{36}|glpat-[A-Za-z0-9_-]{20,}|xox[baprs]-[0-9A-Za-z-]{10,}|-----BEGIN (RSA|OPENSSH|PRIVATE) KEY-----|BEGIN PRIVATE KEY)'
+added_lines=$(git diff --cached -U0 --no-color | filter_added)
+if [[ -n "${added_lines}" ]] && echo "${added_lines}" | search "${secret_regex}" >/dev/null 2>&1; then
+  echo "ERROR: 检测到疑似密钥或令牌内容（仅检查新增行）。"
+  echo "${added_lines}" | search "${secret_regex}" || true
+  echo "请移除敏感内容，或改为本地配置文件/密钥管理。"
+  exit 1
+fi
+
+exit 0
