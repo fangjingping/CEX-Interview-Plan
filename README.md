@@ -21,6 +21,11 @@
 - `gateway-auth`: 网关鉴权演示
 - `market-data`: 行情与数据分发演示
 - `demo-resilience`: Spring Cloud 治理演示
+- `demo-low-latency`: 低延迟环形队列演示
+- `demo-jvm-tuning`: GC 日志分析演示
+- `demo-profiling`: 性能剖析演示
+- `demo-trade-pipeline`: 合约交易链路集成演示
+- `demo-resilience-boot`: Boot 3 + Spring Cloud 治理示例
 - `docs/ARCHITECTURE.md`: 可用于面试系统设计的结构化说明
 - `docs/DERIVATIVES-INTERVIEW-OUTLINE.md`: 合约方向 CTO 级面试大纲与题库框架
 - `docs/handbooks/`: 四大方向与全业务扩展手册
@@ -65,6 +70,9 @@ mvn test
 - 增强中间件治理实现细节（Outbox/CDC、TTL、ES 刷新语义）。
 - 增加预提交敏感信息扫描钩子与安装脚本。
 - 补充 Java 与中间件交互链路说明，并修正幂等、并发与时钟依赖实现。
+- 新增低延迟/JVM 调优/性能剖析演示模块，补齐 tail latency 与 safepoint/Code Cache 内容。
+- 新增合约链路集成演示与 Boot 3 治理示例，补齐端到端闭环与可运行样例。
+- 增强幂等去重与熔断半开治理，补齐过期清理与空闲策略演示。
 
 ## 行为记录（Agent Log）
 
@@ -84,3 +92,6 @@ mvn test
 - 2025-12-27 | Codex | 增强中间件治理实现细节，补充 Outbox/CDC、TTL 与 ES 刷新语义演示。
 - 2025-12-27 | Codex | 新增预提交敏感信息扫描钩子与安装脚本。
 - 2025-12-27 | Codex | 修正撮合并发控制、账本线程安全与幂等窗口，并补充 Java 与中间件交互链路说明。
+- 2025-12-27 | Codex | 新增低延迟/JVM 调优/性能剖析演示模块，并补齐尾延迟诊断内容。
+- 2025-12-27 | Codex | 新增合约链路集成演示与 Boot 3 治理示例，并补齐链路闭环与治理说明。
+- 2025-12-27 | Codex | 增强幂等去重过期清理、熔断半开控制与低延迟空闲策略演示。

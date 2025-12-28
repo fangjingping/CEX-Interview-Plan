@@ -20,10 +20,18 @@
 - 并发组件：线程池、阻塞队列、并发容器与背压策略。
 - 并发原语：ReentrantLock/ReadWriteLock/StampedLock、Condition、ThreadLocal。
 - 异步模型：CompletableFuture/ForkJoin 的适用场景与代价。
-- 性能定位：GC 日志、线程栈、火焰图、JFR。
+- 性能定位：GC 日志、线程栈、火焰图、JFR/async-profiler。
 - 内存与对象：逃逸分析、分配热点、false sharing。
-- JVM 调优：G1/ZGC、TLAB、堆外内存、类加载与元空间。
-- 低延迟策略：对象复用、批处理与 NUMA 亲和。
+- JVM 调优：G1/ZGC、TLAB、Code Cache、类加载与元空间。
+- 低延迟策略：对象复用、批处理、NUMA 亲和与线程绑核。
+- 诊断闭环：safepoint 日志、JIT 退化、内存碎片与尾延迟治理。
+
+## 低延迟深水区
+- JIT 与 Code Cache：编译层级、去优化、Code Cache 满导致的抖动。
+- safepoint：触发点与停顿来源，如何基于日志定位。
+- GC 选型：ZGC/Shenandoah vs G1 的场景取舍与暂停预算。
+- 内存布局：对象头、对齐、伪共享与 cache line 影响。
+- 堆外与 DirectBuffer：使用边界、内存回收与泄漏定位。
 
 ## 典型面试题与追问
 必问
@@ -34,6 +42,7 @@
 - OOM 的常见根因与修复步骤？
 - ThreadLocal 泄漏与类加载器泄漏如何排查？
 - safepoint 停顿的常见触发点有哪些？
+- Code Cache 满导致编译退化时如何处理？
 
 ## 回答结构建议
 先识别瓶颈类型（CPU/内存/锁/IO）→ 给观测证据 → 复现实验或压测 → 优化 → 结果验证。
@@ -43,5 +52,5 @@
 - 对“锁竞争/排队延迟”的理解停留在概念层。
 
 ## 演示关联
-- 代码模块：`demo-java-concurrency`
-- 建议演示：单线程顺序处理、背压与拒绝策略、FIFO 保序。
+- 代码模块：`demo-java-concurrency`, `demo-low-latency`, `demo-jvm-tuning`, `demo-profiling`
+- 建议演示：单线程顺序处理、背压与拒绝策略、FIFO 保序、GC 日志分析、性能剖析。

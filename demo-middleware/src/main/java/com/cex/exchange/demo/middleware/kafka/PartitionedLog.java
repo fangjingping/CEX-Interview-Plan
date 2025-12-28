@@ -1,28 +1,44 @@
 package com.cex.exchange.demo.middleware.kafka;
 
+import com.cex.exchange.demo.middleware.SystemTimeSource;
+import com.cex.exchange.demo.middleware.TimeSource;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * PartitionedLog 核心类。
  */
 public class PartitionedLog {
+    private static final long DEFAULT_RECORD_ID_TTL_MILLIS = 86_400_000L;
+
     private final int partitionCount;
     private final Partitioner partitioner;
     private final Map<Integer, List<PartitionRecord>> logs = new ConcurrentHashMap<>();
-    private final Set<String> recordIds = ConcurrentHashMap.newKeySet();
+    private final Map<String, Long> recordIdExpiresAt = new ConcurrentHashMap<>();
+    private final long recordIdTtlMillis;
+    private final TimeSource timeSource;
 
     public PartitionedLog(int partitionCount, Partitioner partitioner) {
+        this(partitionCount, partitioner, DEFAULT_RECORD_ID_TTL_MILLIS, new SystemTimeSource());
+    }
+
+    public PartitionedLog(int partitionCount, Partitioner partitioner, long recordIdTtlMillis, TimeSource timeSource) {
         if (partitionCount <= 0) {
             throw new IllegalArgumentException("partitionCount must be > 0");
         }
+        if (recordIdTtlMillis <= 0) {
+            throw new IllegalArgumentException("recordIdTtlMillis must be > 0");
+        }
         this.partitionCount = partitionCount;
         this.partitioner = Objects.requireNonNull(partitioner, "partitioner");
+        this.recordIdTtlMillis = recordIdTtlMillis;
+        this.timeSource = Objects.requireNonNull(timeSource, "timeSource");
     }
 
     public PartitionRecord append(String key, String payload) {
@@ -38,10 +54,20 @@ public class PartitionedLog {
 
     public boolean appendIfAbsent(String recordId, String key, String payload) {
         Objects.requireNonNull(recordId, "recordId");
-        if (!recordIds.add(recordId)) {
+        long now = timeSource.nowMillis();
+        AtomicBoolean accepted = new AtomicBoolean(false);
+        recordIdExpiresAt.compute(recordId, (id, existing) -> {
+            if (existing == null || existing <= now) {
+                accepted.set(true);
+                return now + recordIdTtlMillis;
+            }
+            return existing;
+        });
+        if (!accepted.get()) {
             return false;
         }
         append(key, payload);
+        cleanupExpiredRecordIds(now);
         return true;
     }
 
@@ -84,5 +110,17 @@ public class PartitionedLog {
 
     public int partitionCount() {
         return partitionCount;
+    }
+
+    public void cleanupExpiredRecordIds() {
+        cleanupExpiredRecordIds(timeSource.nowMillis());
+    }
+
+    private void cleanupExpiredRecordIds(long nowMillis) {
+        for (Map.Entry<String, Long> entry : recordIdExpiresAt.entrySet()) {
+            if (entry.getValue() <= nowMillis) {
+                recordIdExpiresAt.remove(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

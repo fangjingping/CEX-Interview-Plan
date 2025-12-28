@@ -16,6 +16,11 @@
 - `gateway-auth`: 网关鉴权演示。
 - `market-data`: 行情与数据分发演示。
 - `demo-resilience`: Spring Cloud 治理演示。
+- `demo-low-latency`: 低延迟环形队列演示。
+- `demo-jvm-tuning`: GC 日志分析演示。
+- `demo-profiling`: 性能剖析演示。
+- `demo-trade-pipeline`: 合约交易链路集成演示。
+- `demo-resilience-boot`: Boot 3 + Spring Cloud 治理示例。
 - `docs/`: 面试材料与手册（`handbooks/`）。
 
 ## 构建、测试与开发命令
@@ -24,6 +29,11 @@
 - `mvn -pl demo-risk test`: 运行指定演示模块测试。
 - `mvn -pl wallet-custody test`: 运行钱包与托管演示测试。
 - `mvn -pl demo-resilience test`: 运行 Spring Cloud 治理演示测试。
+- `mvn -pl demo-low-latency test`: 运行低延迟环形队列演示测试。
+- `mvn -pl demo-jvm-tuning test`: 运行 GC 日志分析演示测试。
+- `mvn -pl demo-profiling test`: 运行性能剖析演示测试。
+- `mvn -pl demo-trade-pipeline test`: 运行合约交易链路集成演示测试。
+- `mvn -pl demo-resilience-boot spring-boot:run`: 启动 Boot 3 治理示例。
 - `scripts/install-hooks.sh`: 安装本仓库预提交钩子（敏感信息扫描）。
 - 新增文档与任务请放在 `docs/` 下，并在 `README.md` 中补充索引。
 

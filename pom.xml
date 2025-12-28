@@ -19,6 +19,11 @@
         <module>gateway-auth</module>
         <module>market-data</module>
         <module>demo-resilience</module>
+        <module>demo-low-latency</module>
+        <module>demo-jvm-tuning</module>
+        <module>demo-profiling</module>
+        <module>demo-trade-pipeline</module>
+        <module>demo-resilience-boot</module>
     </modules>
 
     <properties>

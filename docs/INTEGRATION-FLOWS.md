@@ -28,6 +28,7 @@
 - 撮合与订单簿：`matching-engine`
 - 幂等与 Outbox：`demo-middleware`
 - 回放与快照：`demo-system-design`
+- 端到端链路：`demo-trade-pipeline`
 - 风控与强平：`demo-risk`
 - 账本与清结算：`account-ledger`, `settlement-recon`
 - 鉴权与治理：`gateway-auth`, `demo-resilience`

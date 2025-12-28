@@ -42,7 +42,9 @@ public class AuthService {
             return false;
         }
         String nonceKey = apiKey.keyId() + ":" + request.nonce();
-        return registerNonce(nonceKey, nowMillis);
+        boolean accepted = registerNonce(nonceKey, nowMillis);
+        cleanupExpiredNonces(nowMillis);
+        return accepted;
     }
 
     private boolean registerNonce(String nonceKey, long nowMillis) {
@@ -56,5 +58,13 @@ public class AuthService {
             return existing;
         });
         return accepted.get();
+    }
+
+    private void cleanupExpiredNonces(long nowMillis) {
+        for (var entry : nonceExpiresAt.entrySet()) {
+            if (entry.getValue() <= nowMillis) {
+                nonceExpiresAt.remove(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }

@@ -104,6 +104,10 @@ public class WalletService {
         return Optional.ofNullable(withdrawals.get(withdrawalId));
     }
 
+    public void cleanupExpiredDeposits() {
+        cleanupExpiredDeposits(timeSource.nowMillis());
+    }
+
     private void requireId(String value, String name) {
         Objects.requireNonNull(value, name);
         if (value.isBlank()) {

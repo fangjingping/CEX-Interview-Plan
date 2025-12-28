@@ -34,6 +34,9 @@
 - G1/ZGC 的调优思路与适用场景？
 - ThreadLocal 泄漏与类加载器泄漏如何排查？
 - safepoint 停顿的常见触发点有哪些？
+- Code Cache 满导致 JIT 退化如何识别与处理？
+- 如何处理伪共享与 cache line 争用？
+- async-profiler/perf 与 JFR 的使用差异？
 
 ## 中间件与存储
 

@@ -28,4 +28,20 @@ class CircuitBreakerTest {
         breaker.recordSuccess();
         assertEquals(CircuitState.CLOSED, breaker.getState());
     }
+
+    @Test
+    void halfOpenAllowsSingleTrial() {
+        CircuitBreaker breaker = new CircuitBreaker(1, 1_000L);
+        long now = 5_000L;
+
+        breaker.recordFailure(now);
+        assertEquals(CircuitState.OPEN, breaker.getState());
+
+        long later = now + 1_000L;
+        assertTrue(breaker.allowRequest(later));
+        assertFalse(breaker.allowRequest(later));
+
+        breaker.recordFailure(later);
+        assertEquals(CircuitState.OPEN, breaker.getState());
+    }
 }

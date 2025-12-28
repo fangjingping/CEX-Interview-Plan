@@ -9,6 +9,7 @@ public class CircuitBreaker {
     private CircuitState state = CircuitState.CLOSED;
     private int failureCount = 0;
     private long openedAtMillis = 0;
+    private boolean halfOpenTrialUsed = false;
 
     public CircuitBreaker(int failureThreshold, long openDurationMillis) {
         if (failureThreshold <= 0 || openDurationMillis <= 0) {
@@ -22,9 +23,17 @@ public class CircuitBreaker {
         if (state == CircuitState.OPEN) {
             if (nowMillis - openedAtMillis >= openDurationMillis) {
                 state = CircuitState.HALF_OPEN;
+                halfOpenTrialUsed = false;
                 return true;
             }
             return false;
+        }
+        if (state == CircuitState.HALF_OPEN) {
+            if (halfOpenTrialUsed) {
+                return false;
+            }
+            halfOpenTrialUsed = true;
+            return true;
         }
         return true;
     }
@@ -32,6 +41,7 @@ public class CircuitBreaker {
     public synchronized void recordSuccess() {
         failureCount = 0;
         state = CircuitState.CLOSED;
+        halfOpenTrialUsed = false;
     }
 
     public synchronized void recordFailure(long nowMillis) {
@@ -52,5 +62,6 @@ public class CircuitBreaker {
     private void open(long nowMillis) {
         state = CircuitState.OPEN;
         openedAtMillis = nowMillis;
+        halfOpenTrialUsed = false;
     }
 }

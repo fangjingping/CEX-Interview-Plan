@@ -52,14 +52,14 @@
 - 分区策略：按交易对/市场分片；单写多读。
 - 组件隔离：撮合、风控、账本、行情独立扩容。
 - 容灾：多机房、热备、延迟切换、只读降级。
-- JVM 性能：G1/ZGC、对象池、NUMA、线程模型。
+- JVM 性能：G1/ZGC、对象池、NUMA、线程模型与尾延迟治理。
 
 ## 6. Java 基础与并发能力
 - Java 17 语言基础：集合、泛型、异常、NIO、反射与类加载。
 - 并发模型：JMM、锁与 CAS、并发容器、线程池与背压。
 - 性能排障：GC 日志、内存泄漏、线程堆栈、热点方法定位。
 - 工程能力：构建与依赖管理（Maven）、测试可维护性。
-- JVM 优化：GC 选型、JIT、对象分配与内存布局。
+- JVM 优化：GC 选型、JIT/Code Cache、对象分配与内存布局。
 
 ## 7. 中间件与数据一致性
 - 消息系统：顺序性、消费幂等、重放、延迟消息与死信队列。
@@ -109,6 +109,11 @@
 - `gateway-auth`: 签名校验与防重放
 - `market-data`: 盘口聚合与 Top N 快照
 - `demo-resilience`: 限流、熔断、注册发现与配置中心
+- `demo-low-latency`: 低延迟环形队列与背压
+- `demo-jvm-tuning`: GC 日志分析与抖动定位
+- `demo-profiling`: 性能剖析与热点定位
+- `demo-trade-pipeline`: 合约交易链路集成演示
+- `demo-resilience-boot`: Boot 3 + Spring Cloud 治理示例
 
 拟扩展模块
 - `risk-engine`: 风控与预冻结
