@@ -34,4 +34,23 @@ class AuthServiceTest {
         AuthService authService = new AuthService(30_000L);
         assertFalse(authService.verify(apiKey, request, now));
     }
+
+    @Test
+    void allowsNonceAfterTtlExpires() {
+        ApiKey apiKey = new ApiKey("K1", "secret");
+        long now = 10_000L;
+        String nonce = "N3";
+        String payload = "payload";
+        String signature = SignatureUtil.sign(apiKey.secret(), now, nonce, payload);
+        SignedRequest request = new SignedRequest(apiKey.keyId(), now, nonce, payload, signature);
+
+        AuthService authService = new AuthService(30_000L, 5_000L);
+        assertTrue(authService.verify(apiKey, request, now));
+        assertFalse(authService.verify(apiKey, request, now + 1_000L));
+
+        long later = now + 6_000L;
+        String laterSignature = SignatureUtil.sign(apiKey.secret(), later, nonce, payload);
+        SignedRequest laterRequest = new SignedRequest(apiKey.keyId(), later, nonce, payload, laterSignature);
+        assertTrue(authService.verify(apiKey, laterRequest, later));
+    }
 }

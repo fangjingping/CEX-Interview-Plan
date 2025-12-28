@@ -35,4 +35,22 @@ class IdempotentConsumerTest {
 
         assertEquals(2, handled.get());
     }
+
+    @Test
+    void releasesWhenHandlerFails() {
+        IdempotentConsumer consumer = new IdempotentConsumer(new InMemoryIdempotencyStore());
+        AtomicInteger handled = new AtomicInteger();
+
+        Message message = new Message("m3", "payload-3", 3L);
+        try {
+            consumer.handle(message, msg -> {
+                handled.incrementAndGet();
+                throw new IllegalStateException("fail");
+            });
+        } catch (IllegalStateException ignored) {
+        }
+
+        assertTrue(consumer.handle(message, msg -> handled.incrementAndGet()));
+        assertEquals(2, handled.get());
+    }
 }

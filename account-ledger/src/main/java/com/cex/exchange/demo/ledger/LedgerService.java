@@ -2,11 +2,11 @@ package com.cex.exchange.demo.ledger;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * LedgerService 核心类。
@@ -15,7 +15,7 @@ public class LedgerService {
     private static final BigDecimal ZERO = BigDecimal.ZERO;
 
     private final Set<String> processedEntries = ConcurrentHashMap.newKeySet();
-    private final List<LedgerEntry> entries = new ArrayList<>();
+    private final List<LedgerEntry> entries = new CopyOnWriteArrayList<>();
 
     public void post(String entryId, List<LedgerLine> lines) {
         Objects.requireNonNull(entryId, "entryId");

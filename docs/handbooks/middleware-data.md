@@ -43,3 +43,4 @@
 ## 演示关联
 - 代码模块：`demo-middleware`
 - 建议演示：幂等消费、分区顺序、Outbox/CDC、缓存 TTL、搜索刷新语义。
+- 流程说明：`docs/INTEGRATION-FLOWS.md`

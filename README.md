@@ -30,6 +30,7 @@
 - `docs/SCENARIO-PLAYBOOK.md`: 场景演练手册
 - `docs/ENGINEERING-DRILLS.md`: 工程实操演练
 - `docs/INTERVIEW-RUBRICS.md`: 面试评分标准
+- `docs/INTEGRATION-FLOWS.md`: Java 与中间件交互链路说明
 - `docs/TASKS.md`: 练习任务清单
 - `docs/INTERVIEW-QUESTIONS.md`: 面试问答方向
 - `AGENTS.md`: 仓库贡献指南与协作规则
@@ -63,6 +64,7 @@ mvn test
 - 新增能力矩阵、公式速查、场景演练、工程实操与评分标准。
 - 增强中间件治理实现细节（Outbox/CDC、TTL、ES 刷新语义）。
 - 增加预提交敏感信息扫描钩子与安装脚本。
+- 补充 Java 与中间件交互链路说明，并修正幂等、并发与时钟依赖实现。
 
 ## 行为记录（Agent Log）
 
@@ -81,3 +83,4 @@ mvn test
 - 2025-12-27 | Codex | 新增能力矩阵、公式速查、场景演练、工程实操与评分标准文档。
 - 2025-12-27 | Codex | 增强中间件治理实现细节，补充 Outbox/CDC、TTL 与 ES 刷新语义演示。
 - 2025-12-27 | Codex | 新增预提交敏感信息扫描钩子与安装脚本。
+- 2025-12-27 | Codex | 修正撮合并发控制、账本线程安全与幂等窗口，并补充 Java 与中间件交互链路说明。

@@ -15,11 +15,12 @@ class TtlIdempotencyStoreTest {
         ManualTimeSource timeSource = new ManualTimeSource(1_000L);
         TtlIdempotencyStore store = new TtlIdempotencyStore(500L, timeSource);
 
-        assertTrue(store.markIfAbsent("m1"));
-        assertFalse(store.markIfAbsent("m1"));
+        assertTrue(store.tryStart("m1"));
+        store.markSuccess("m1");
+        assertFalse(store.tryStart("m1"));
 
         timeSource.advance(600L);
-        assertTrue(store.markIfAbsent("m1"));
+        assertTrue(store.tryStart("m1"));
     }
 
     private static final class ManualTimeSource implements TimeSource {

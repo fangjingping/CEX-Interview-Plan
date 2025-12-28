@@ -24,4 +24,19 @@ class OutboxPublisherTest {
         assertEquals(0, publisher.publish(10));
         assertEquals(1, log.totalRecords());
     }
+
+    @Test
+    void replaysPendingButKeepsIdempotentLog() {
+        OutboxStore store = new OutboxStore();
+        PartitionedLog log = new PartitionedLog(2, new HashPartitioner());
+        OutboxPublisher publisher = new OutboxPublisher(store, log);
+
+        store.add(new OutboxEvent("E1", "BTC-USDT", "payload-1"));
+        store.add(new OutboxEvent("E2", "BTC-USDT", "payload-2"));
+
+        assertEquals(1, publisher.publish(1));
+        assertEquals(1, publisher.publish(10));
+        assertEquals(0, publisher.publish(10));
+        assertEquals(2, log.totalRecords());
+    }
 }

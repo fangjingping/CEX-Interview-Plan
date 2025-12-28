@@ -12,6 +12,10 @@
 6. 行情（成交、盘口更新）
 7. 持久化（事件日志、快照、审计）
 
+## Java 与中间件交互链路
+
+- 详见 `docs/INTEGRATION-FLOWS.md`，包含 Outbox、Kafka 分区、幂等与回放细节。
+
 ## 关键组件
 
 - Gateway：鉴权、限流、幂等

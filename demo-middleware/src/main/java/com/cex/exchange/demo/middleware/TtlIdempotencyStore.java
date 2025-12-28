@@ -9,9 +9,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * TtlIdempotencyStore 核心类。
  */
 public class TtlIdempotencyStore implements IdempotencyStore {
+    private enum State {
+        IN_FLIGHT,
+        PROCESSED
+    }
+
     private final long ttlMillis;
     private final TimeSource timeSource;
-    private final Map<String, Long> expiresAtById = new ConcurrentHashMap<>();
+    private final Map<String, Entry> entries = new ConcurrentHashMap<>();
 
     public TtlIdempotencyStore(long ttlMillis, TimeSource timeSource) {
         if (ttlMillis <= 0) {
@@ -22,27 +27,49 @@ public class TtlIdempotencyStore implements IdempotencyStore {
     }
 
     @Override
-    public boolean markIfAbsent(String messageId) {
+    public boolean tryStart(String messageId) {
         Objects.requireNonNull(messageId, "messageId");
         long now = timeSource.nowMillis();
-        long expiresAt = now + ttlMillis;
         AtomicBoolean inserted = new AtomicBoolean(false);
-        expiresAtById.compute(messageId, (id, existing) -> {
-            if (existing == null || existing <= now) {
+        entries.compute(messageId, (id, existing) -> {
+            if (existing == null || existing.expiresAtMillis <= now) {
                 inserted.set(true);
-                return expiresAt;
+                return new Entry(State.IN_FLIGHT, now + ttlMillis);
             }
             return existing;
         });
         return inserted.get();
     }
 
+    @Override
+    public void markSuccess(String messageId) {
+        Objects.requireNonNull(messageId, "messageId");
+        long now = timeSource.nowMillis();
+        entries.computeIfPresent(messageId, (id, existing) -> new Entry(State.PROCESSED, now + ttlMillis));
+        cleanupExpired();
+    }
+
+    @Override
+    public void release(String messageId) {
+        entries.remove(messageId);
+    }
+
     public void cleanupExpired() {
         long now = timeSource.nowMillis();
-        for (Map.Entry<String, Long> entry : expiresAtById.entrySet()) {
-            if (entry.getValue() <= now) {
-                expiresAtById.remove(entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Entry> entry : entries.entrySet()) {
+            if (entry.getValue().expiresAtMillis <= now) {
+                entries.remove(entry.getKey(), entry.getValue());
             }
+        }
+    }
+
+    private static final class Entry {
+        private final State state;
+        private final long expiresAtMillis;
+
+        private Entry(State state, long expiresAtMillis) {
+            this.state = state;
+            this.expiresAtMillis = expiresAtMillis;
         }
     }
 }

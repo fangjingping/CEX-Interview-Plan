@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -14,6 +15,7 @@ public class PartitionedLog {
     private final int partitionCount;
     private final Partitioner partitioner;
     private final Map<Integer, List<PartitionRecord>> logs = new ConcurrentHashMap<>();
+    private final Set<String> recordIds = ConcurrentHashMap.newKeySet();
 
     public PartitionedLog(int partitionCount, Partitioner partitioner) {
         if (partitionCount <= 0) {
@@ -32,6 +34,15 @@ public class PartitionedLog {
             log.add(record);
             return record;
         }
+    }
+
+    public boolean appendIfAbsent(String recordId, String key, String payload) {
+        Objects.requireNonNull(recordId, "recordId");
+        if (!recordIds.add(recordId)) {
+            return false;
+        }
+        append(key, payload);
+        return true;
     }
 
     public List<PartitionRecord> read(int partition, int fromOffset, int limit) {

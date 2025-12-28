@@ -13,10 +13,16 @@ public class IdempotentConsumer {
     }
 
     public boolean handle(Message message, MessageHandler handler) {
-        if (!store.markIfAbsent(message.id())) {
+        if (!store.tryStart(message.id())) {
             return false;
         }
-        handler.handle(message);
-        return true;
+        try {
+            handler.handle(message);
+            store.markSuccess(message.id());
+            return true;
+        } catch (RuntimeException ex) {
+            store.release(message.id());
+            throw ex;
+        }
     }
 }

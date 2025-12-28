@@ -7,14 +7,14 @@ import com.cex.exchange.model.OrderType;
 import com.cex.exchange.model.Trade;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -24,16 +24,28 @@ public class MatchingEngine {
     private static final BigDecimal ZERO = BigDecimal.ZERO;
 
     private final Map<String, OrderBook> books;
+    private final Map<String, Object> bookLocks;
     private final AtomicLong tradeSequence;
+    private final TimeSource timeSource;
 
     public MatchingEngine() {
-        this.books = new HashMap<>();
+        this(new SystemTimeSource());
+    }
+
+    public MatchingEngine(TimeSource timeSource) {
+        this.books = new ConcurrentHashMap<>();
+        this.bookLocks = new ConcurrentHashMap<>();
         this.tradeSequence = new AtomicLong(1);
+        this.timeSource = Objects.requireNonNull(timeSource, "timeSource");
     }
 
     public List<Trade> place(Order order) {
-        OrderBook book = books.computeIfAbsent(order.getSymbol(), OrderBook::new);
-        return match(order, book);
+        Objects.requireNonNull(order, "order");
+        Object lock = bookLocks.computeIfAbsent(order.getSymbol(), key -> new Object());
+        synchronized (lock) {
+            OrderBook book = books.computeIfAbsent(order.getSymbol(), OrderBook::new);
+            return match(order, book);
+        }
     }
 
     public Optional<OrderBook> getOrderBook(String symbol) {
@@ -64,7 +76,7 @@ public class MatchingEngine {
                         maker.getOrderId(),
                         taker.getUserId(),
                         maker.getUserId(),
-                        Instant.now().toEpochMilli()
+                        timeSource.nowMillis()
                 ));
                 if (maker.isFilled()) {
                     level.removeFirst();

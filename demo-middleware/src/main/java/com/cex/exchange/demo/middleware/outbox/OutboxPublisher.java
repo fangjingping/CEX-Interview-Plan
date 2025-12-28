@@ -25,7 +25,7 @@ public class OutboxPublisher {
         }
         List<String> published = new ArrayList<>();
         for (OutboxEvent event : events) {
-            log.append(event.key(), event.payload());
+            log.appendIfAbsent(event.eventId(), event.key(), event.payload());
             published.add(event.eventId());
         }
         store.markPublished(published);

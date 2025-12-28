@@ -4,24 +4,42 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * WalletService 核心类。
  */
 public class WalletService {
+    private static final long DEFAULT_DEPOSIT_TTL_MILLIS = 86_400_000L;
+
     private final Map<WalletKey, Balance> balances = new ConcurrentHashMap<>();
-    private final Set<String> processedDeposits = ConcurrentHashMap.newKeySet();
+    private final Map<String, Long> depositExpiresAt = new ConcurrentHashMap<>();
     private final Map<String, Withdrawal> withdrawals = new ConcurrentHashMap<>();
+    private final TimeSource timeSource;
+    private final long depositTtlMillis;
+
+    public WalletService() {
+        this(new SystemTimeSource(), DEFAULT_DEPOSIT_TTL_MILLIS);
+    }
+
+    public WalletService(TimeSource timeSource, long depositTtlMillis) {
+        this.timeSource = Objects.requireNonNull(timeSource, "timeSource");
+        if (depositTtlMillis <= 0) {
+            throw new IllegalArgumentException("depositTtlMillis must be > 0");
+        }
+        this.depositTtlMillis = depositTtlMillis;
+    }
 
     public void deposit(String userId, String asset, BigDecimal amount, String txId) {
         requireId(txId, "txId");
-        if (!processedDeposits.add(txId)) {
+        long now = timeSource.nowMillis();
+        if (!markDeposit(txId, now)) {
             return;
         }
         Balance balance = balances.computeIfAbsent(new WalletKey(userId, asset), key -> new Balance());
         balance.credit(amount);
+        cleanupExpiredDeposits(now);
     }
 
     public String requestWithdrawal(String userId, String asset, BigDecimal amount, String withdrawalId) {
@@ -90,6 +108,26 @@ public class WalletService {
         Objects.requireNonNull(value, name);
         if (value.isBlank()) {
             throw new IllegalArgumentException(name + " must not be blank");
+        }
+    }
+
+    private boolean markDeposit(String txId, long nowMillis) {
+        AtomicBoolean accepted = new AtomicBoolean(false);
+        depositExpiresAt.compute(txId, (key, existing) -> {
+            if (existing == null || existing <= nowMillis) {
+                accepted.set(true);
+                return nowMillis + depositTtlMillis;
+            }
+            return existing;
+        });
+        return accepted.get();
+    }
+
+    private void cleanupExpiredDeposits(long nowMillis) {
+        for (Map.Entry<String, Long> entry : depositExpiresAt.entrySet()) {
+            if (entry.getValue() <= nowMillis) {
+                depositExpiresAt.remove(entry.getKey(), entry.getValue());
+            }
         }
     }
 }

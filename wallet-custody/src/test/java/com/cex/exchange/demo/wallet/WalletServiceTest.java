@@ -53,8 +53,40 @@ class WalletServiceTest {
         assertEquals(WithdrawalStatus.CONFIRMED, service.getWithdrawal("W2").orElseThrow().status());
     }
 
+    @Test
+    void depositAllowsReuseAfterTtl() {
+        ManualTimeSource timeSource = new ManualTimeSource(1_000L);
+        WalletService service = new WalletService(timeSource, 500L);
+
+        service.deposit("U2", "USDT", new BigDecimal("100"), "TX4");
+        service.deposit("U2", "USDT", new BigDecimal("100"), "TX4");
+
+        timeSource.advance(600L);
+        service.deposit("U2", "USDT", new BigDecimal("100"), "TX4");
+
+        Balance balance = service.getBalance("U2", "USDT").orElseThrow();
+        assertBigDecimal(new BigDecimal("200"), balance.getAvailable());
+    }
+
     private void assertBigDecimal(BigDecimal expected, BigDecimal actual) {
         assertTrue(actual.compareTo(expected) == 0,
                 () -> "Expected " + expected + " but got " + actual);
+    }
+
+    private static final class ManualTimeSource implements TimeSource {
+        private long nowMillis;
+
+        private ManualTimeSource(long nowMillis) {
+            this.nowMillis = nowMillis;
+        }
+
+        @Override
+        public long nowMillis() {
+            return nowMillis;
+        }
+
+        private void advance(long deltaMillis) {
+            nowMillis += deltaMillis;
+        }
     }
 }
