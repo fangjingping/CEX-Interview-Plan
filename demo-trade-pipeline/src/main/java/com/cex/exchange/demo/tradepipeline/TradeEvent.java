@@ -14,6 +14,8 @@ public class TradeEvent {
     private final OrderSide side;
     private final BigDecimal price;
     private final BigDecimal quantity;
+    private final String takerOrderId;
+    private final String makerOrderId;
     private final String takerUserId;
     private final String makerUserId;
     private final long timestamp;
@@ -23,6 +25,8 @@ public class TradeEvent {
                       OrderSide side,
                       BigDecimal price,
                       BigDecimal quantity,
+                      String takerOrderId,
+                      String makerOrderId,
                       String takerUserId,
                       String makerUserId,
                       long timestamp) {
@@ -31,6 +35,8 @@ public class TradeEvent {
         this.side = Objects.requireNonNull(side, "side");
         this.price = Objects.requireNonNull(price, "price");
         this.quantity = Objects.requireNonNull(quantity, "quantity");
+        this.takerOrderId = requireText(takerOrderId, "takerOrderId");
+        this.makerOrderId = requireText(makerOrderId, "makerOrderId");
         this.takerUserId = requireText(takerUserId, "takerUserId");
         this.makerUserId = requireText(makerUserId, "makerUserId");
         this.timestamp = timestamp;
@@ -54,6 +60,14 @@ public class TradeEvent {
 
     public BigDecimal getQuantity() {
         return quantity;
+    }
+
+    public String getTakerOrderId() {
+        return takerOrderId;
+    }
+
+    public String getMakerOrderId() {
+        return makerOrderId;
     }
 
     public String getTakerUserId() {

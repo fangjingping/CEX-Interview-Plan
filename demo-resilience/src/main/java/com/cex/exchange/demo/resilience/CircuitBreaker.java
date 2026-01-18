@@ -23,7 +23,7 @@ public class CircuitBreaker {
         if (state == CircuitState.OPEN) {
             if (nowMillis - openedAtMillis >= openDurationMillis) {
                 state = CircuitState.HALF_OPEN;
-                halfOpenTrialUsed = false;
+                halfOpenTrialUsed = true;
                 return true;
             }
             return false;

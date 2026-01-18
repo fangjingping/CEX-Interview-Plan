@@ -15,6 +15,10 @@
 - `demo-java-concurrency`: Java 并发与背压演示
 - `demo-middleware`: 幂等与中间件演示
 - `demo-risk`: 合约风险与强平演示
+- `position-ledger`: 仓位与保证金台账演示
+- `liquidation-engine`: 强平队列与订单生成演示
+- `pricing`: 指数价/标记价/资金费率演示
+- `persistence`: 事件日志与快照持久化演示
 - `wallet-custody`: 钱包与托管演示
 - `account-ledger`: 双录账本演示
 - `settlement-recon`: 清结算与对账演示
@@ -36,6 +40,18 @@
 - `docs/ENGINEERING-DRILLS.md`: 工程实操演练
 - `docs/INTERVIEW-RUBRICS.md`: 面试评分标准
 - `docs/INTEGRATION-FLOWS.md`: Java 与中间件交互链路说明
+- `docs/DEMO-WALKTHROUGH.md`: 端到端演示运行说明
+- `docs/INDEX.md`: 文档索引目录
+- `docs/CONTRIBUTING.md`: Contribution guide
+- `docs/CODE_OF_CONDUCT.md`: Code of conduct
+- `docs/SECURITY.md`: Security policy
+- `docs/THIRD_PARTY_NOTICES.md`: Third-party notices
+- `docs/THIRD_PARTY_LICENSES.md`: Third-party license report
+- `docs/handbooks/kafka-ops.md`: Kafka 运维手册
+- `docs/handbooks/redis-ops.md`: Redis 运维手册
+- `docs/handbooks/es-ops.md`: Elasticsearch 运维手册
+- `docs/handbooks/mysql-ops.md`: MySQL 运维手册
+- `docs/scenarios/`: 故障复盘模板
 - `docs/TASKS.md`: 练习任务清单
 - `docs/INTERVIEW-QUESTIONS.md`: 面试问答方向
 - `AGENTS.md`: 仓库贡献指南与协作规则

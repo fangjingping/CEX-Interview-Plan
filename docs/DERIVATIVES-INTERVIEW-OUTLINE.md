@@ -103,6 +103,10 @@
 - `demo-java-concurrency`: 单线程撮合队列 + 背压
 - `demo-middleware`: 幂等消费 + 去重
 - `demo-risk`: 保证金比率与强平判定
+- `position-ledger`: 仓位/保证金台账
+- `liquidation-engine`: 强平/ADL
+- `pricing`: 指数价/标记价/资金费率
+- `persistence`: 事件日志与快照
 - `wallet-custody`: 充值幂等 + 提现冻结
 - `account-ledger`: 双录账本与幂等入账
 - `settlement-recon`: 费用对账与差异标记
@@ -116,12 +120,7 @@
 - `demo-resilience-boot`: Boot 3 + Spring Cloud 治理示例
 
 拟扩展模块
-- `risk-engine`: 风控与预冻结
-- `position-ledger`: 仓位/保证金账本
-- `liquidation-engine`: 强平/ADL
-- `pricing`: 指数价/标记价/资金费率
 - `gateway`: API/鉴权/限流/幂等
-- `persistence`: 事件日志与快照
 
 ## 13. CTO 面试题库与评估要点
 面向“可交付生产级系统”的候选人，强调工程落地、系统权衡、风险意识与团队协作。

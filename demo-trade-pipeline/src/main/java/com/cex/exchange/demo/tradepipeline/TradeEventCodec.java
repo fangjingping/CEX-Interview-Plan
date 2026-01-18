@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public class TradeEventCodec {
     private static final String SEP = "|";
-    private static final int FIELD_COUNT = 8;
+    private static final int FIELD_COUNT = 10;
 
     public String encode(TradeEvent event) {
         Objects.requireNonNull(event, "event");
@@ -20,6 +20,8 @@ public class TradeEventCodec {
                 event.getSide().name(),
                 event.getPrice().toPlainString(),
                 event.getQuantity().toPlainString(),
+                event.getTakerOrderId(),
+                event.getMakerOrderId(),
                 event.getTakerUserId(),
                 event.getMakerUserId(),
                 String.valueOf(event.getTimestamp()));
@@ -39,7 +41,9 @@ public class TradeEventCodec {
                 new BigDecimal(parts[4]),
                 parts[5],
                 parts[6],
-                Long.parseLong(parts[7])
+                parts[7],
+                parts[8],
+                Long.parseLong(parts[9])
         );
     }
 }

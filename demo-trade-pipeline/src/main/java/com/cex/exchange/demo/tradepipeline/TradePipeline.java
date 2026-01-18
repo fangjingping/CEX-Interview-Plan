@@ -72,6 +72,8 @@ public class TradePipeline {
                     order.getSide(),
                     trade.getPrice(),
                     trade.getQuantity(),
+                    trade.getTakerOrderId(),
+                    trade.getMakerOrderId(),
                     trade.getTakerUserId(),
                     trade.getMakerUserId(),
                     trade.getTimestamp()

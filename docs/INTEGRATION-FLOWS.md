@@ -10,12 +10,15 @@
 5. Outbox：撮合与持久化写入同事务域，防止消息丢失。
 6. 消息总线：Kafka/Pulsar 以 `symbol` 为分区键分发。
 7. 账本/仓位：消费成交事件，写账本与仓位，落库并再次 Outbox。
-8. 行情分发：订阅成交/盘口事件，扇出到 WebSocket/推送。
+8. 定价服务：指数价/标记价/资金费率计算，作为风控与强平基准。
+9. 强平与风险：基于标记价触发强平/减仓与风控告警。
+10. 行情分发：订阅成交/盘口事件，扇出到 WebSocket/推送。
 
 ## 关键交互点与一致性
 - 幂等边界：API 层 `idempotencyKey`；撮合事件 `eventId`；账本 `entryId`；出入金 `txId`。
 - 顺序保证：同交易对事件落在同分区；撮合与账本在同分区消费。
 - 失败重试：下游消费采用 at-least-once + 幂等去重；重放依赖事件日志/快照。
+- 定价基准：Index/Mark Price 快照作为风控与强平的一致性依据。
 - 数据查询：核心账本以关系型数据库为准；ES 仅用于检索与分析。
 
 ## 中间件落点（Java 服务）
@@ -29,6 +32,9 @@
 - 幂等与 Outbox：`demo-middleware`
 - 回放与快照：`demo-system-design`
 - 端到端链路：`demo-trade-pipeline`
-- 风控与强平：`demo-risk`
+- 风控与强平：`demo-risk`, `liquidation-engine`
+- 仓位与保证金：`position-ledger`
+- 定价服务：`pricing`
+- 持久化：`persistence`
 - 账本与清结算：`account-ledger`, `settlement-recon`
 - 鉴权与治理：`gateway-auth`, `demo-resilience`

@@ -23,9 +23,6 @@ public class LedgerService {
         if (lines.isEmpty()) {
             throw new IllegalArgumentException("lines must not be empty");
         }
-        if (!processedEntries.add(entryId)) {
-            return;
-        }
         BigDecimal debitTotal = ZERO;
         BigDecimal creditTotal = ZERO;
         for (LedgerLine line : lines) {
@@ -41,7 +38,15 @@ public class LedgerService {
         if (debitTotal.compareTo(creditTotal) != 0) {
             throw new IllegalArgumentException("debit and credit not balanced");
         }
-        entries.add(new LedgerEntry(entryId, List.copyOf(lines), Instant.now()));
+        if (!processedEntries.add(entryId)) {
+            return;
+        }
+        try {
+            entries.add(new LedgerEntry(entryId, List.copyOf(lines), Instant.now()));
+        } catch (RuntimeException ex) {
+            processedEntries.remove(entryId);
+            throw ex;
+        }
     }
 
     public List<LedgerEntry> getEntries() {

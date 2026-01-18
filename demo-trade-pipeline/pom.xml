@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.cex</groupId>
-            <artifactId>matching-engine</artifactId>
+            <artifactId>cex-matching-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -29,6 +29,36 @@
         <dependency>
             <groupId>com.cex</groupId>
             <artifactId>market-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cex</groupId>
+            <artifactId>demo-risk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cex</groupId>
+            <artifactId>risk-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cex</groupId>
+            <artifactId>position-ledger</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cex</groupId>
+            <artifactId>pricing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cex</groupId>
+            <artifactId>liquidation-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cex</groupId>
+            <artifactId>persistence</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

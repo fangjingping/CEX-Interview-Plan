@@ -13,6 +13,11 @@
         <module>demo-java-concurrency</module>
         <module>demo-middleware</module>
         <module>demo-risk</module>
+        <module>risk-engine</module>
+        <module>position-ledger</module>
+        <module>liquidation-engine</module>
+        <module>pricing</module>
+        <module>persistence</module>
         <module>wallet-custody</module>
         <module>account-ledger</module>
         <module>settlement-recon</module>
